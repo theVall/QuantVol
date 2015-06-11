@@ -1,46 +1,32 @@
 #include "Main.h"
-#include <GLFW/glfw3.h>
+#include "System.h"
 
+#include <iostream>
+
+using namespace std;
 
 int main(int argc, char **argv)
 {
-    glfwInit();
-
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-
-    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-
-    GLFWwindow* mainWindow = glfwCreateWindow(800,
-                                          600,
-                                          "Volume Renderer",
-                                          nullptr,
-                                          nullptr);
-
-    GLFWwindow* profilerWindow = glfwCreateWindow(800,
-                                                  600,
-                                                  "Profiler",
-                                                  nullptr,
-                                                  nullptr);
-    
-    glfwMakeContextCurrent(mainWindow);
-
-    while (!glfwWindowShouldClose(mainWindow))
+    System *pSystem = new System;
+    if (!pSystem)
     {
-        // Profiler
-        glfwMakeContextCurrent(profilerWindow);
-        glfwSwapBuffers(profilerWindow);
-        glfwPollEvents();
-
-        // Volume renderer
-        glfwMakeContextCurrent(mainWindow);
-        glfwSwapBuffers(mainWindow);
-        glfwPollEvents();
+        cout << "Error creating system." << endl;
+        return 1;
     }
 
-    glfwTerminate();
+    if (pSystem->Init())
+    {
+        pSystem->Run();
+    }
+    else
+    {
+        cout << "Error initializing OpenGL/OpenCL." << endl;
+    }
+
+    // cleanup
+    pSystem->Shutdown();
+    delete pSystem;
+    pSystem = 0;
 
     return 0;
 }
